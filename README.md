@@ -4,13 +4,14 @@
 ## 🖼 Workflow Previews
 
 ### Workflow 1: Data Processing
-![Data Processing Workflow](images/workflow1.png)
+<img width="861" height="628" alt="Internship responder" src="https://github.com/user-attachments/assets/3080fb7a-1643-4991-9f04-8f42b80ca30c" />
 
 ### Workflow 2: Email Automation
-![Email Automation Workflow](images/workflow2.png)
+<img width="897" height="571" alt="Internship responder notification" src="https://github.com/user-attachments/assets/da854e2e-96a4-4b2b-9224-3905a7d15dd3" />
 
 ### Workflow 3: API Integration
-![API Integration Workflow](images/workflow3.png)
+![Uploading Research Assistant Bot.png…]()
+
 
 > You can scroll through the images to quickly see how each workflow is structured.
 
