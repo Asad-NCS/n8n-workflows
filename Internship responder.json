@@ -1,0 +1,301 @@
+{
+  "name": "Internship responder",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -272,
+        -112
+      ],
+      "id": "801e933c-8717-4353-86a8-136622e06887",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Subject: {{ $json[\"subject\"] }}\nBody: {{ $json[\"body\"] }}"
+            },
+            {
+              "content": "=SYSTEM PROMPT — INTERNSHIP EMAIL CLASSIFIER\n\nYou are a personal inbox assistant for a student (Asad) looking for internship opportunities. Class each email into ONE category:\n\n- Relevant_Internship_Offer: Email contains internship offer or opportunity that fits Asad's interests in Computer Science, tech, or data roles.\n- Not_Relevant: Email is not about internships or irrelevant to Asad (e.g., newsletters, spam, events not related to internships).\n\nIf unclear, label as Not_Relevant.\n\nReturn ONLY one label: Relevant_Internship_Offer OR Not_Relevant.\n\nEmail to classify:\nSubject: {{EMAIL_SUBJECT}}\nBody:\n{{EMAIL_BODY}}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        144,
+        -112
+      ],
+      "id": "3422ae1b-e666-4f54-8b11-56c7dd605524",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "aROQPfMTIM1oJhck",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9688dfc5-e773-44b1-a7ce-bb280a081d59",
+              "leftValue": "={{ $json.choices[0].message.content.label }}",
+              "rightValue": "Relevant_Internship_Offer",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -16,
+        112
+      ],
+      "id": "d6df8a35-e81b-4dc3-a6d3-03039f5bde74",
+      "name": "If",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=SYSTEM PROMPT — INTERNSHIP RESPONSE DRAFT\n\nYou are Asad's inbox assistant. Write a short, polite reply to acknowledge receipt of an internship offer:\n\nGoals:\n- Thank the sender for sharing the opportunity.\n- Mention intent to review or apply.\n- Keep it professional, short (<100 words).\n\nOutput format:\nSubject: Re: {{ $('Gmail Trigger').item.json.subject }} \nBody:\n<greeting + concise acknowledgment + closing>\n\nSignature:\nAsad\n\nEmail to respond:\nSubject: {{ $('Gmail Trigger').item.json.subject }} \nBody: {{ $('Gmail Trigger').item.json.text || $('Gmail Trigger').item.json.textAsHtml }}\n\n",
+              "role": "system"
+            },
+            {
+              "content": "=Subject: {{ $('Gmail Trigger').item.json.subject }}\nBody: {{ $('Gmail Trigger').item.json.text || $('Gmail Trigger').item.json.textAsHtml }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        224,
+        96
+      ],
+      "id": "b76e3afd-d709-4da8-a5bc-897445054da2",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "aROQPfMTIM1oJhck",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.choices[0].message.content.subject }}",
+        "message": "={{ $json.choices[0].message.content.body }}",
+        "options": {
+          "sendTo": "={{ $('Gmail Trigger').item.json.from.value[0].address }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        304
+      ],
+      "id": "78b82976-3b7c-4d8e-9fb2-e782b65ef26d",
+      "name": "Create a draft",
+      "webhookId": "0a2d9e13-1fe8-4fd1-a611-3f86bc6e23ec",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mkashif.bscs24seecs@seecs.edu.pk",
+        "subject": "=New Internship Draft Created: {{ $json[\"message\"] }}",
+        "message": "=Hi Asad,  A new internship email has been classified as relevant and a draft response has been created in Gmail.  Subject: {{ $('Gmail Trigger').item.json.subject }} ,Draft ID / Thread ID: {{ $json.message.threadId }}  Check your Gmail to review and send the draft.  Best, Inbox Hero Bot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        304
+      ],
+      "id": "15e54504-59dc-481d-a3ee-c82e54a2ca83",
+      "name": "Send a message",
+      "webhookId": "1ab10f3d-24f9-4fc8-8cd6-196a95c70b9c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c14f7040-3581-4c14-a52b-9c952344e70e",
+              "name": "subject",
+              "value": "={{ $json[\"subject\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "f8afbf85-8519-4e98-8f4e-3d8705a68794",
+              "name": "body",
+              "value": "={{ $json[\"text\"] || $json[\"textAsHtml\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        -112
+      ],
+      "id": "45a871f7-97a9-43c8-a99d-9ab391d00191",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2c8c9011-af0b-4a23-9736-edf140fe5f6d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2047aed12d17ed0a36472bddb7b2cdd20dc0971a40ef554d8967480c41dc1db"
+  },
+  "id": "Jo5ZfcZnq5OsofxU",
+  "tags": []
+}

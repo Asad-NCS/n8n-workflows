@@ -1,0 +1,558 @@
+{
+  "name": "Research Assistant Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        -288
+      ],
+      "id": "8cbf345c-b30b-404b-9434-607922ad13cd",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ae22182b-579e-4993-b876-aaf7f0af19c0",
+              "leftValue": "={{$json[\"label\"]}}",
+              "rightValue": "Student_Project_Query",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -48
+      ],
+      "id": "1487c1ab-e6ee-4e61-9b20-36257cb379cc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f30d51b1-ce3a-4428-8a39-f46f801ed76b",
+              "leftValue": "={{$json[\"label\"]}}",
+              "rightValue": "Research_Collaboration",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -32
+      ],
+      "id": "c2c128ae-9e68-4f0e-bc76-21fabf9db7c4",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9717694d-0653-4a15-b025-ca6f9075ecf9",
+              "leftValue": "={{$json[\"label\"]}}",
+              "rightValue": "=High_Priority_Admin",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -480,
+        192
+      ],
+      "id": "8273d2f4-8a03-4a3b-a6ea-fb3643ccc8c2",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Subject: {{$json.EMAIL_SUBJECT}}\nBody: {{$json.EMAIL_BODY}}\nDeadline: {{$json.DEADLINE}}\n"
+            },
+            {
+              "content": "=SYSTEM PROMPT — STUDENT PROJECT QUERY DRAFT\nYou are the academic assistant to Dr. Mehwish Fatima (Assistant Professor, AI & Data Science, SEECS NUST).\nWrite a helpful reply to a student asking for project/FYP guidance (topic, dataset, feasibility, supervision).\n\nGoals:\n- Thank the student and reflect their request in 1 line\n- Offer next step: office hours or short meeting; include two concrete time slots (PKT)\n- Provide 2–3 targeted pointers (dataset/library/resource links if provided; otherwise generic placeholders)\n- Ask for a minimal info bundle to speed things up\n\nMinimal info bundle (bullet list, compact):\n- Program & semester\n- Topic idea + 2–3 sentences on scope/objective\n- Target dataset(s) or data source\n- Team size (if any) and timeline\n- Prior relevant courses/skills\n\nConstraints:\n- Max 170 words\n- Plain text (no markdown)\n- No hard commitments; suggest exploratory call if scope unclear\n\nOutput format (strict):\nSubject: Re: {{EMAIL_SUBJECT}} — Next Steps for Your Project Query\nBody:\n<greeting + concise paragraphs + compact bullet list for info bundle + offer two PKT time slots>\n\nSignature:\nDr. Mehwish Fatima\nAssistant Professor, AI & Data Science, SEECS–NUST\n\nEmail to respond:\n<email>\nSubject: {{EMAIL_SUBJECT}}\nBody:\n{{EMAIL_BODY}}\n</email>\n\nContext variables (optional if available):\n- Office hours/slots (PKT): {{OFFICE_HOURS}}\n- Resource links (comma-separated): {{RESOURCE_LINKS}}\n",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        64,
+        -288
+      ],
+      "id": "d5e06276-2299-4bc4-8d2f-e50c8cc799f7",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "aROQPfMTIM1oJhck",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.choices[0].message.content.Body }}",
+        "options": {
+          "sendTo": "={{ $('Gmail Trigger').item.json.from.value[0].address }}\n"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        400,
+        -288
+      ],
+      "id": "a135d166-4be1-4a18-9421-47fab33e3bf8",
+      "name": "Create a draft",
+      "webhookId": "a224a955-5c6d-4f48-bab8-17bc219b3c20",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Subject: {{$json.EMAIL_SUBJECT}}\nBody: {{$json.EMAIL_BODY}}\nDeadline: {{$json.DEADLINE}}"
+            },
+            {
+              "content": "You are the academic assistant to Dr. Mehwish Fatima (Assistant Professor, AI & Data Science, SEECS–NUST).\nWrite a professional reply to a collaboration inquiry (grants, co-authorship, joint datasets/code, evaluation).\n\nGoals:\n- Acknowledge interest and area alignment\n- Request a short structured brief to evaluate fit\n- Offer a 20–30 minute call; propose 2 time slots (PKT)\n- If a deadline is mentioned, reflect feasibility or ask for flexibility\n\nAsk for a 6-point brief (numbered, compact):\n1) Title & 2–3 sentence summary\n2) Objectives & expected outcomes\n3) Methods & datasets (incl. access/IRB if applicable)\n4) Roles & contributions expected from Dr. Fatima\n5) Timeline & funding (agency, due date)\n6) Links (draft, repo, prior work)\n\nConstraints:\n- Max 170 words\n- Plain text (no markdown)\n- Avoid commitments until brief is reviewed\n\nOutput format (strict):\nSubject: Re: {{EMAIL_SUBJECT}} — Collaboration Next Steps\nBody:\n<greeting + concise acknowledgment + numbered brief request + two PKT slots + closing>\n\nSignature:\nDr. Mehwish Fatima\nAssistant Professor, AI & Data Science, SEECS–NUST\n",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        352,
+        -48
+      ],
+      "id": "424aef82-987e-4a4b-96bc-a9ffd49cfae9",
+      "name": "Message a model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "aROQPfMTIM1oJhck",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.choices[0].message.content.Body }}",
+        "options": {
+          "sendTo": "={{ $('Gmail Trigger').item.json.from.value[0].address }}\n"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        128
+      ],
+      "id": "bed664f8-e234-42bc-8729-9db901d0386e",
+      "name": "Create a draft1",
+      "webhookId": "5073d2c3-6f21-4450-b08c-0e91cccf0a0b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Subject: {{$json.EMAIL_SUBJECT}}\nBody: {{$json.EMAIL_BODY}}\nDeadline: {{$json.DEADLINE}}"
+            },
+            {
+              "content": "=You are the academic assistant to Dr. Mehwish Fatima (Assistant Professor, AI & Data Science, SEECS–NUST).\nWrite a professional, concise reply to an URGENT administrative/official email.\n\nGoals:\n- Acknowledge receipt + urgency\n- Confirm concrete next step(s) or decision\n- State timeline or availability; propose alternatives if there’s a clash\n- Ask for any missing critical info (ticket ID, PO/ref#, attachment, link)\n- Keep calm, reassuring, solution-oriented tone\n\nConstraints:\n- Max 140 words in body\n- Plain text (no markdown)\n- Do not promise actions beyond what’s stated\n- If decision depends on missing info, clearly condition it (“Once I have X, I will Y.”)\n- If scheduling is involved, propose two slots with timezone (e.g., PKT)\n\nOutput format (strict):\nSubject: [Action] Re: {{EMAIL_SUBJECT}}\nBody:\n<polite greeting + concise paragraphs + professional closing>\n\nSignature:\nDr. Mehwish Fatima\nAssistant Professor, AI & Data Science, SEECS–NUST\n",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -208,
+        176
+      ],
+      "id": "a5f3cd31-b04c-46ac-b97e-2cdb93937833",
+      "name": "Message a model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "aROQPfMTIM1oJhck",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Gmail Trigger').item.json.subject }}",
+        "message": "={{ $json.choices[0].message.content.Body }}",
+        "options": {
+          "sendTo": "={{ $('Gmail Trigger').item.json.from.value[0].address }}\n"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        176
+      ],
+      "id": "d3cb285b-3a1f-486d-871c-f35a71f1cdc3",
+      "name": "Create a draft2",
+      "webhookId": "dc301638-70da-4ac6-a285-f198c6acbfae",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0AWtWBgXOgYUF9BW",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "645b0270-eac1-4694-b571-6f532f3589fc",
+              "name": "EMAIL_SUBJECT",
+              "value": "={{$json[\"subject\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "44fa3095-8e65-4a9a-8144-8d4c85cf4ef0",
+              "name": "EMAIL_BODY",
+              "value": "={{$json[\"text\"] || $json[\"textAsHtml\"]}}",
+              "type": "string"
+            },
+            {
+              "id": "2fd977bd-277e-4734-9aa3-e93c71c72d95",
+              "name": "FROM",
+              "value": "= {{$json[\"from\"][\"value\"][0][\"address\"]}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -48
+      ],
+      "id": "c61e26e1-68de-47f2-8909-a5344f100a82",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Subject: {{$json[\"EMAIL_SUBJECT\"]}}\nBody: {{$json[\"EMAIL_BODY\"]}}\nFrom: {{$json[\"FROM\"]}}"
+            },
+            {
+              "content": "You are an email classifier. Output EXACTLY one label from the following list:\n[Student_Project_Query, Research_Collaboration, High_Priority_Admin Other ]\n",
+              "role": "system"
+            }
+          ]
+        },
+        "simplify": false,
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -368,
+        -304
+      ],
+      "id": "506353ef-7217-437d-98bf-fdac46546afa",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "aROQPfMTIM1oJhck",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a858726-6916-4cbe-8ddb-74176c0af8c5",
+              "name": "=label",
+              "value": "={{ $json.choices[0].message.content.label }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        -48
+      ],
+      "id": "85273bbe-dad4-4d1e-907d-ac5e7e6f2a6d",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        [
+          {
+            "node": "Create a draft1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Message a model3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model3": {
+      "main": [
+        [
+          {
+            "node": "Create a draft2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "246d19ba-b1fa-453c-a664-e94f1ea6a077",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2047aed12d17ed0a36472bddb7b2cdd20dc0971a40ef554d8967480c41dc1db"
+  },
+  "id": "qOy3oiOYkexKvUOx",
+  "tags": []
+}
